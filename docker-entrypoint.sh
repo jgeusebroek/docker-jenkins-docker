@@ -5,14 +5,17 @@ DOCKER_GROUP=docker
 
 if [ -S ${DOCKER_SOCKET} ]; then
 
+    # Delete current jenkins user
     userdel jenkins
+
+    # Delete current docker group
+    groupdel docker
+
+    # (Re)create Jenkins user
     adduser -h /var/jenkins_home -s /bin/bash -u ${JENKINS_UID} -g 'Jenkins User' -D jenkins
 
     # Get group id for the docker socket
     DOCKER_GID=$(stat -c '%g' ${DOCKER_SOCKET})
-
-    # Delete current docker group
-    groupdel docker
 
     # Recreate docker group to match the docker socket group
     groupadd -for -g ${DOCKER_GID} ${DOCKER_GROUP}
